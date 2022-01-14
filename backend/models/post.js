@@ -48,64 +48,119 @@
 //     return Posts;
 // }
 
+
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-    class Posts extends Model {
-        static associate(models) {
-            Posts.belongsTo(models.Users, {
-                foreignKey: {
-                    allowNull: false
-                },
-                onDelete: 'CASCADE'
-            });
-        }
-    }
-    Posts.init({
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            allowNull: false,
-            primaryKey: true,
-            unique: true
-        },
-        userId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            onUpdate: "CASCADE",
-            onDelete: "CASCADE"
-        },
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        content: {
-            type: DataTypes.TEXT,
-            allowNull: false
-        },
-        mediaUrl: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: null,
-            validate: {
-                isUrl: true
-            }
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW
-        }
-    }, {
-        sequelize,
-        modelName: 'posts',
-        timestamps: true
-    });
+  class Post extends Model {
+    static associate(models) {
+      Post.hasOne(models.user, { foreignKey: 'userId', onDelete: 'cascade' });
 
-    return Posts;
-}
+    }
+  };
+  Post.init({
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
+        unique: true
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+    },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    content: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    mediaUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null,
+        validate: {
+            isUrl: true
+        }
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    }
+  }, {
+    sequelize,
+    modelName: 'post',
+  });
+  return Post;
+};
+
+
+// const { Model } = require('sequelize');
+
+// module.exports = (sequelize, DataTypes) => {
+//     class Posts extends Model {
+//         static associate(models) {
+//             Posts.belongsTo(models.Users, {
+//                 foreignKey: "userId",
+//                 onDelete: 'CASCADE'
+//             });
+//         }
+//     }
+//     Posts.init({
+//         id: {
+//             type: DataTypes.INTEGER,
+//             autoIncrement: true,
+//             allowNull: false,
+//             primaryKey: true,
+//             unique: true
+//         },
+//         userId: {
+//             type: DataTypes.INTEGER,
+//             allowNull: false,
+//             onUpdate: "CASCADE",
+//             onDelete: "CASCADE"
+//         },
+//         title: {
+//             type: DataTypes.STRING,
+//             allowNull: false
+//         },
+//         content: {
+//             type: DataTypes.TEXT,
+//             allowNull: false
+//         },
+//         mediaUrl: {
+//             type: DataTypes.STRING,
+//             allowNull: true,
+//             defaultValue: null,
+//             validate: {
+//                 isUrl: true
+//             }
+//         },
+//         createdAt: {
+//             type: DataTypes.DATE,
+//             allowNull: false,
+//             defaultValue: DataTypes.NOW
+//         },
+//         updatedAt: {
+//             type: DataTypes.DATE,
+//             allowNull: false,
+//             defaultValue: DataTypes.NOW
+//         }
+//     }, {
+//         sequelize,
+//         modelName: 'posts',
+//         timestamps: true
+//     });
+
+//     return Posts;
+// }

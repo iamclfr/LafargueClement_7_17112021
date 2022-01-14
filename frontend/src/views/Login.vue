@@ -102,14 +102,18 @@ export default {
                 })
                 .then(response => {
                     // Set cookie userId and userLoggued
-                    document.cookie = `userId=${response.data.userId}`
-                    document.cookie = `userToken=${response.data.token}`
-                    document.cookie = 'userLoggued=true'
+                    // document.cookie = `userId=${response.data.userId}`
+                    // document.cookie = `userToken=${response.data.token}`
+                    // document.cookie = 'userLoggued=true'
+
+                    localStorage.setItem('userId', response.data.userId)
+                    localStorage.setItem('userToken', response.data.token)
+                    localStorage.setItem('userLoggued', true)
 
                     if (response.data.admin === true) {
-                        document.cookie = 'isAdmin=true'                        
+                       localStorage.setItem('isAdmin', true)                       
                     } else {
-                        document.cookie = 'isAdmin=false'
+                       localStorage.setItem('isAadmin', false)
                     }
 
                     // Redirect to home page

@@ -106,23 +106,23 @@
             // this.nightShift = document.getElementById('nightShift');
             // this.btnToggleSubMenu()
             // this.btnToggleNightShift()
+
         },
         methods: {
             getUserProfile() {
                 // Get cookie user id and token
-                //  eslint-disable-next-line
-                const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                //  eslint-disable-next-line
-                const token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                const userId = localStorage.getItem('userId');
+                const userToken = localStorage.getItem('userToken');
 
                 // Get user profile with userId and token
                 axios.get('http://localhost:5000/api/auth/' + userId, {
                         headers: {
-                            Authorization: 'Bearer ' + token
+                            Authorization: 'Bearer ' + userToken
                         }
                     })
                     .then(response => {
-                        this.userProfile = response.data;
+                        localStorage.setItem('userProfile', JSON.stringify(response.data));
+                        this.userProfile = JSON.parse(localStorage.getItem('userProfile'));
                     })
                     .catch(error => {
                         console.log(error);
@@ -179,6 +179,7 @@
                 document.cookie.split(";").forEach(function(c) {
                     document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
                 });
+                localStorage.clear()
                 window.location.href = '/login';
             }
             

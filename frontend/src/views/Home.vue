@@ -1,5 +1,5 @@
 <template>
-    <v-container class="max-w-screen-lg mx-4 lg:m-auto my-0 pt-4 flex sm:justify-center md:justify-center lg:justify-between flex-wrap">
+    <div class="max-w-screen-lg mx-4 lg:m-auto my-0 pt-4 flex sm:justify-center md:justify-center lg:justify-between flex-wrap">
         <div class="column-left flex justify-center items-center flex-wrap" style="width: 650px;">
             <div class="bg-transparent w-full mb-4 flex justify-center items-center relative" style="height: 74px;">
                 <!-- <span class="absolute w-full h-full groupomania-color-blue text-center font-extrabold" style="font-size:4.44621vw;">MES PUBLICATIONS</span> -->
@@ -90,7 +90,7 @@
             </div>
             <div class="bg-white w-full rounded-md shadow-md mt-4 sticky top-16 flex justify-center items-center flex-wrap overflow-hidden">
                 <div class="flex justify-start items-center h-20 groupomania-bg-blue w-full">
-                    <h1 class="pl-4 text-lg text-white font-semibold">Quoi de Neuf John Doe ?</h1>
+                    <h1 class="pl-4 text-lg text-white font-semibold">Quoi de Neuf ?</h1>
                 </div>
                 <div class="w-full flex justify-center mt-4">
                     <router-link to="/profile" class="w-full py-2 px-4 bg-white text-center groupomania-color-blue border-2 groupomania-border-blue font-bold rounded-md mx-4 shadow-md">Voir mon Profil</router-link>
@@ -129,7 +129,6 @@
                                     <div class="mt-2 flex justify-start items-center w-full">
                                         <label for="postImage" class="cursor-pointer w-full inline-flex justify-center rounded-md border-2 groupomania-border-orange shadow-sm px-4 py-2 bg-white text-base font-medium groupomania-color-orange focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto sm:text-sm">Choisir une Image</label>
                                         <input type="file" name="postImage" id="postImage" class="opacity-0 overflow-hidden absolute" style="width:.1px;height:.1px;z-index:-1;">
-                                        <span id="imageName" class="ml-0 lg:ml-4"></span>
                                     </div>
                                     <div class="px-4 py-3 flex justify-end items-center w-full">
                                         <button v-on:click="createPostHidden = true" id="closeModal" type="button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
@@ -148,7 +147,7 @@
         </div>
         <!-- End Create Post Modal -->
 
-    </v-container>
+    </div>
 </template>
 <script>
     import axios from 'axios';
@@ -195,9 +194,9 @@
             }
 
             //  eslint-disable-next-line
-            const userToken = document.cookie.replace(/(?:(?:^|.*;\s*)userToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userToken = localStorage.getItem('userToken');
             //  eslint-disable-next-line
-            const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userId = localStorage.getItem('userId');
 
             axios.post('http://localhost:5000/api/posts', data , {
                 headers: {
@@ -223,7 +222,7 @@
 
         getAllPosts() {
             //  eslint-disable-next-line
-            const userToken = document.cookie.replace(/(?:(?:^|.*;\s*)userToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userToken = localStorage.getItem('userToken');
             axios.get('http://localhost:5000/api/posts', {
                 headers: {
                     'Content-Type': 'application/json',
@@ -247,7 +246,7 @@
          */
         deleteThePost() {
             //  eslint-disable-next-line
-            const userToken = document.cookie.replace(/(?:(?:^|.*;\s*)userToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userToken = localStorage.getItem('userToken');
 
             const postId = this.postId
 
@@ -274,11 +273,11 @@
          * VÉRIFICATION SI L'UTILISATEUR EST BIEN CONNECTÉ ET QUE SON ID EST BIEN RÉCUPÉRÉ
          */
 
-        if (!document.cookie.includes('userId') && !document.cookie.includes('userLoggued')) {
+        if (!localStorage.getItem('userToken') || !localStorage.getItem('userLoggued')) {
             this.$router.push('/login')
         }
 
-        if(document.cookie.includes('isAdmin') === true) {
+        if(localStorage.getItem('isAdmin') === 'true') {
             this.isAdmin = true
         }
 

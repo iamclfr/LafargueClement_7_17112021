@@ -68,78 +68,154 @@
 //     return Users;
 //   };
 
+
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-    class Users extends Model {
-        static associate(models) {
-            models.Users.hasMany(models.Posts);
-        }
+  class User extends Model {
+    static associate(models) {
+        // define association here
     }
-    Users.init({
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            allowNull: false,
-            primaryKey: true,
-            unique: true
-        },
-        familyName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        phone: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        birthday: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                isEmail: true
-            }
-        },
-        profilePicture: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        admin: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW
+  };
+  User.init({
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
+        unique: true
+    },
+    familyName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
         }
-    }, {
-        sequelize,
-        modelName: 'users',
-        timestamps: true
-    });
+    },
+    birthday: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true
+        }
+    },
+    profilePicture: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    admin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    }
+  }, {
+    sequelize,
+    modelName: 'user',
+  });
+  return User;
+};
 
-    return Users;
-}
+
+
+// const { Model } = require('sequelize');
+
+// module.exports = (sequelize, DataTypes) => {
+//     class Users extends Model {
+//         static associate(models) {
+//             models.Users.hasMany(models.Posts);
+//         }
+//     }
+//     Users.init({
+//         id: {
+//             type: DataTypes.INTEGER,
+//             autoIncrement: true,
+//             allowNull: false,
+//             primaryKey: true,
+//             unique: true
+//         },
+//         familyName: {
+//             type: DataTypes.STRING,
+//             allowNull: false
+//         },
+//         name: {
+//             type: DataTypes.STRING,
+//             allowNull: false
+//         },
+//         phone: {
+//             type: DataTypes.STRING,
+//             allowNull: false,
+//             unique: true
+//         },
+//         password: {
+//             type: DataTypes.STRING,
+//             allowNull: false,
+//             validate: {
+//                 notEmpty: true
+//             }
+//         },
+//         birthday: {
+//             type: DataTypes.STRING,
+//             allowNull: false
+//         },
+//         email: {
+//             type: DataTypes.STRING,
+//             allowNull: false,
+//             unique: true,
+//             validate: {
+//                 isEmail: true
+//             }
+//         },
+//         profilePicture: {
+//             type: DataTypes.STRING,
+//             allowNull: true
+//         },
+//         admin: {
+//             type: DataTypes.BOOLEAN,
+//             allowNull: false,
+//             defaultValue: false
+//         },
+//         createdAt: {
+//             type: DataTypes.DATE,
+//             allowNull: false,
+//             defaultValue: DataTypes.NOW
+//         },
+//         updatedAt: {
+//             type: DataTypes.DATE,
+//             allowNull: false,
+//             defaultValue: DataTypes.NOW
+//         }
+//     }, {
+//         sequelize,
+//         modelName: 'users',
+//         timestamps: true
+//     });
+
+//     return Users;
+// }

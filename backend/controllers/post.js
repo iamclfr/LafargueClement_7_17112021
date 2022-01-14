@@ -1,6 +1,9 @@
 const db = require('../models');
-let user = require('../models/user');
-let post = require('../models/post');
+const user = db.users;
+const post = db.posts;
+const like = db.like;
+// let user = require('../models/user');
+// let post = require('../models/post');
 const fs = require('fs');
 const {Op} = require('sequelize');
 const { now } = require('sequelize/dist/lib/utils');
@@ -34,13 +37,13 @@ exports.createPost = async (req, res, next) => {
 // Get all posts
 exports.getAllPosts = async (req, res, next) => {
     // Get all posts from the database
-    post = await db.posts.findAll({
+    post.findAll({
         order: [['createdAt', 'DESC']],
         attributes: ['id', 'userId', 'title', 'content', 'createdAt', 'updatedAt', 'mediaUrl'],
-        include: {
-            model: db.users,
-            attributes: ['id', 'familyName', 'name', 'profilePicture'],
-        },
+        // include: {
+        //     model: user,
+        //     attributes: ['id', 'familyName', 'name', 'profilePicture'],
+        // },
     })
     .then(posts => {
         // Return the posts in JSON format
@@ -58,21 +61,15 @@ exports.getAllPosts = async (req, res, next) => {
 }
 
 // Get a post by id
-exports.getPost = async (req, res, next) => {
+exports.getUserPosts = async (req, res, next) => {
     // Check if postId is valid
-    post = await db.posts.findOne({
+    post.findAll({
         where: {
-            [Op.or]: [{
-                id: req.params.postId
-            }],
+            userId: req.userId
         },
-        include: [{
-            model: db.users,
-            attributes: ['id', 'familyName', 'name', 'profilePicture'],
-        }],
     })
-    .then(post => {
-        if (!post) {
+    .then(posts => {
+        if (!posts) {
             return res.status(401).json({
                 message: "Post non trouvé !",
             })
@@ -80,7 +77,7 @@ exports.getPost = async (req, res, next) => {
         // Return the post in JSON format
         res.status(200).json({
             message: "Post récupéré !",
-            post: post,
+            posts: posts,
         })
     })
     .catch(error => {
@@ -93,7 +90,7 @@ exports.getPost = async (req, res, next) => {
 // Update a post
 exports.updatePost = async (req, res, next) => {
     // Check if postId is valid
-    post = await db.posts.findOne({
+    post.findOne({
         where: {
             [Op.or]: [{
                 id: req.params.postId
@@ -137,44 +134,51 @@ exports.updatePost = async (req, res, next) => {
     })
 }
 
-// Delete a post
-exports.deletePost = async (req, res, next) => {
-    // Check if postId is valid
-    post = await db.posts.findOne({
-        where: {
-            [Op.or]: [{
-                id: req.params.postId
-            }],
-        },
-    })
-    .then(post => {
-        if (!post) {
-            return res.status(401).json({
-                message: "Post non trouvé !",
-            })
+exports.deletePost = (req, res, next) => {
+    post.destroy({ where: {id: req.params.postId} })
+      .then(() => res.status(200).json({ message: 'Post removed succesfully' }))
+      .catch(error => res.status(400).json({ error : error + "Erreur lors de la suppression du post !" }));
+};
+
+exports.likePost = async (req, res, next) => {
+    try {
+        const userId = token.getUserId(req);
+        const postId = req.params.id;
+        const user = await db.likes.findOne({
+        where: { UserId: userId, PostId: postId },
+        });
+        if (user) {
+        await db.like.destroy(
+            { where: { UserId: userId, PostId: postId } },
+            { truncate: true, restartIdentity: true }
+        );
+        res.status(200).send({ messageRetour: "vou n'aimez plus ce post" });
+        } else {
+        await db.Like.create({
+            UserId: userId,
+            PostId: postId,
+        });
+        res.status(201).json({ messageRetour: "vous aimez ce post" });
         }
-        // Delete the post in the database
-        post = db.posts.destroy({
-            where: {
-                id: req.params.postId
-            }
-        })
-        .then(post => {
-            // Return the deleted post in JSON format
-            res.status(200).json({
-                message: "Post supprimé !",
-                post: post,
-            })
-        })
-        .catch(error => {
-            res.status(400).json({
-                error: error + "Erreur lors de la suppression du post !",
-            })
-        })
-    })
-    .catch(error => {
-        res.status(500).json({
-            error: error + "Erreur lors de la suppression du post !",
-        })
-    })
-}
+    } catch (error) {
+        return res.status(500).send({ error: "Erreur serveur" });
+    }
+};
+
+exports.addComment = async (req, res) => {
+    try {
+        const comment = req.body.commentMessage;
+        const userId = req.body.userId;
+        const newComment = await db.comments.create({
+        message: comment,
+        userId: userId,
+        PostId: req.params.id,
+        });
+
+        res
+        .status(201)
+        .json({ newComment, messageRetour: "votre commentaire est publié" });
+    } catch (error) {
+        return res.status(500).send({ error: "Erreur serveur" });
+    }
+};

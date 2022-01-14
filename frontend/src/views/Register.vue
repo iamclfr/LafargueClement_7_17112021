@@ -118,6 +118,26 @@ export default {
                 return;
             }
 
+            // Check if phone number is valid (ex: 0782932111)
+            if (data.phone.length !== 10 || !data.phone.match(/\d/)) {
+                console.log('Le numéro de téléphone doit être composé de 10 chiffres !');
+                this.registerForm.classList.add('shake');
+                setTimeout(() => {
+                    this.registerForm.classList.remove('shake');
+                }, 1000);
+                // Tailwind create pop-up message for user to fill all fields
+                this.registerForm.insertAdjacentHTML('beforebegin', `
+                    <div id="popupErrorMsg" class="absolute top-0 lg:-top-14 w-full groupomania-bg-orange text-white text-center font-bold rounded-md p-2 m-2">
+                        Le numéro de téléphone doit être composé de 10 chiffres !
+                    </div>
+                `);
+                setTimeout(() => {
+                    document.getElementById('popupErrorMsg').remove();
+                }, 5000);
+
+                return;
+            }
+
             if(data.email.includes('@')) {
                 data.email = data.email.split('@')[0]
             }
@@ -136,6 +156,24 @@ export default {
                 this.registerForm.insertAdjacentHTML('beforebegin', `
                     <div id="popupErrorMsg" class="absolute top-0 lg:-top-14 w-full groupomania-bg-orange text-white text-center font-bold rounded-md p-2 m-2">
                         Les mots de passe ne correspondent pas !
+                    </div>
+                `);
+                setTimeout(() => {
+                    document.getElementById('popupErrorMsg').remove();
+                }, 5000);
+                return;
+            }
+
+            // Check if password is strong enough (8 characters, 1 uppercase, 1 lowercase, 1 number)
+            if (data.password.length < 8 || !data.password.match(/[A-Z]/) || !data.password.match(/[a-z]/) || !data.password.match(/\d/)) {
+                this.registerForm.classList.add('shake');
+                setTimeout(() => {
+                    this.registerForm.classList.remove('shake');
+                }, 1000);
+                // Tailwind create pop-up message for user to fill all fields
+                this.registerForm.insertAdjacentHTML('beforebegin', `
+                    <div id="popupErrorMsg" class="absolute top-0 lg:-top-14 w-full groupomania-bg-orange text-white text-center font-bold rounded-md p-2 m-2">
+                        Mot de Passe : 8 caractères, 1 majuscule, 1 minuscule et 1 chiffre !
                     </div>
                 `);
                 setTimeout(() => {

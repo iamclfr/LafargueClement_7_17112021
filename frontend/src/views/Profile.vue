@@ -40,22 +40,26 @@
                     <text x="-1.5" y="15" class="font-black groupomania-color-blue" style="letter-spacing:-1.6px;text-shadow: rgb(0 0 0 / 5%) 0px 4px 4px;">PUBLICATIONS</text>
                 </svg>
             </div>
-            <div class="bg-white w-full mb-4 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
+            <!-- START TEMPLATE POST -->
+            <div v-for="post in posts" :key="post.id" class="relative bg-white w-full mb-4 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
+                <button :id="post.id" v-on:click="deletePost"  class="absolute right-2 top-1">
+                    <font-awesome-icon :id="post.id" icon="trash" />
+                </button>
                 <div class="w-full flex flex-wrap justify-start items-center">
                     <div class="inline-flex justify-start items-center">
                         <div class="w-12 flex justify-start items-center">
                             <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full">
                         </div>
                         <div class="flex flex-wrap justify-start items-center text-left">
-                            <a href="/profile" class="postUser w-full text-sm">John Doe</a>
-                            <p class="postTime text-xs text-gray-400">Il y a 10s</p>
+                            <a href="/profile" class="postUser w-full text-sm">{{ userProfile.user.name }} {{ userProfile.user.familyName }}</a>
+                            <p class="postTime text-xs text-gray-400">{{ post.createdAt }}</p>
                         </div>
                     </div>
                     <div class="postTitle w-full justify-start items-center my-2">
-                        <h2 class="px-2 text-xl">Lorem ipsum dolor sit amet.</h2>
+                        <h2 class="px-2 text-xl">{{ post.title }}</h2>
                     </div>
                     <div class="postContent w-full flex justify-center items-center mb-2">
-                        <p class="text-left px-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, recusandae quibusdam iste esse magnam cupiditate eum expedita quisquam autem, dolorum perferendis? Consectetur, quam esse itaque accusantium ut dolorem libero ab.</p>
+                        <p class="text-left px-2">{{ post.content }}</p>
                     </div>
                     <div class="postImg w-full flex justify-center items-center">
                         <img src="/assets/images/bg-img-login-2.jpg" alt="Icone Groupomania" class="w-full">
@@ -70,117 +74,19 @@
                     <div class="w-full flex justify-between items-center">
                         <div class="w-1/3 flex justify-center items-center py-2">
                             <button>
-                                <font-awesome-icon icon="thumbs-up" class="mr-2" />
+                                <font-awesome-icon icon="thumbs-up" class="mr-2"/>
                                 J'aime
                             </button>
                         </div>
                         <div class="w-1/3 flex justify-center items-center py-2">
                             <button>
-                                <font-awesome-icon icon="comment-alt" class="mr-2" />
+                                <font-awesome-icon icon="comment-alt" class="mr-2"/>
                                 Commenter
                             </button>
                         </div>
                         <div class="w-1/3 flex justify-center items-center py-2">
                             <button>
-                                <font-awesome-icon icon="share" class="mr-2" />
-                                Partager
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white w-full mb-4 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
-                <div class="w-full flex flex-wrap justify-start items-center">
-                    <div class="inline-flex justify-start items-center">
-                        <div class="w-12 flex justify-start items-center">
-                            <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full">
-                        </div>
-                        <div class="flex flex-wrap justify-start items-center text-left">
-                            <a href="/profile" class="postUser w-full text-sm">John Doe</a>
-                            <p class="postTime text-xs text-gray-400">Il y a 10s</p>
-                        </div>
-                    </div>
-                    <div class="postTitle w-full justify-start items-center my-2">
-                        <h2 class="px-2 text-xl">Lorem ipsum dolor sit amet.</h2>
-                    </div>
-                    <div class="postContent w-full flex justify-center items-center mb-2">
-                        <p class="text-left px-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, recusandae quibusdam iste esse magnam cupiditate eum expedita quisquam autem, dolorum perferendis? Consectetur, quam esse itaque accusantium ut dolorem libero ab.</p>
-                    </div>
-                    <div class="postImg w-full flex justify-center items-center">
-                        <img src="/assets/images/bg-img-login-2.jpg" alt="Icone Groupomania" class="w-full">
-                    </div>
-                    <div class="w-full flex justify-between items-center">
-                        <div class="w-2/4 flex justify-start py-2 pl-7">154 Likes</div>
-                        <div class="w-2/4 flex justify-end py-2 pr-7">26 Commentaires</div>
-                    </div>
-                    <div class="w-full flex justify-center items-center">
-                        <hr class="w-11/12 border-gray-400">
-                    </div>
-                    <div class="w-full flex justify-between items-center">
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="thumbs-up" class="mr-2" />
-                                J'aime
-                            </button>
-                        </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="comment-alt" class="mr-2" />
-                                Commenter
-                            </button>
-                        </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="share" class="mr-2" />
-                                Partager
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white w-full mb-4 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
-                <div class="w-full flex flex-wrap justify-start items-center">
-                    <div class="inline-flex justify-start items-center">
-                        <div class="w-12 flex justify-start items-center">
-                            <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full">
-                        </div>
-                        <div class="flex flex-wrap justify-start items-center text-left">
-                            <a href="/profile" class="postUser w-full text-sm">John Doe</a>
-                            <p class="postTime text-xs text-gray-400">Il y a 10s</p>
-                        </div>
-                    </div>
-                    <div class="postTitle w-full justify-start items-center my-2">
-                        <h2 class="px-2 text-xl">Lorem ipsum dolor sit amet.</h2>
-                    </div>
-                    <div class="postContent w-full flex justify-center items-center mb-2">
-                        <p class="text-left px-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, recusandae quibusdam iste esse magnam cupiditate eum expedita quisquam autem, dolorum perferendis? Consectetur, quam esse itaque accusantium ut dolorem libero ab.</p>
-                    </div>
-                    <div class="postImg w-full flex justify-center items-center">
-                        <img src="/assets/images/bg-img-login-2.jpg" alt="Icone Groupomania" class="w-full">
-                    </div>
-                    <div class="w-full flex justify-between items-center">
-                        <div class="w-2/4 flex justify-start py-2 pl-7">154 Likes</div>
-                        <div class="w-2/4 flex justify-end py-2 pr-7">26 Commentaires</div>
-                    </div>
-                    <div class="w-full flex justify-center items-center">
-                        <hr class="w-11/12 border-gray-400">
-                    </div>
-                    <div class="w-full flex justify-between items-center">
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="thumbs-up" class="mr-2" />
-                                J'aime
-                            </button>
-                        </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="comment-alt" class="mr-2" />
-                                Commenter
-                            </button>
-                        </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="share" class="mr-2" />
+                                <font-awesome-icon icon="share" class="mr-2"/>
                                 Partager
                             </button>
                         </div>
@@ -219,20 +125,6 @@
                         </div>
                     </div>
                     <router-link to="/" class="w-full py-2 px-4 groupomania-bg-blue text-center text-white font-bold border-2 groupomania-border-blue rounded-md mx-4 my-4 shadow-md">Créer un Post</router-link>
-                </div>
-            </div>
-            <div class="bg-white w-full rounded-md shadow-md sticky top-16  mt-4 flex justify-center items-center flex-wrap overflow-hidden">
-                <div class="flex justify-start items-center h-20 groupomania-bg-blue w-full">
-                    <h1 class="pl-4 text-lg text-white font-semibold">Groupoma'Stats</h1>
-                </div>
-                <div class="w-full">
-                    <ul class="w-full pl-4">
-                        <li class="w-full font-normal mt-4">Nb. de Posts : <span class="font-semibold" id="postStats">15</span></li>
-                        <li class="w-full font-normal mt-4">Nb. de Likes : <span class="font-semibold" id="likeStats">15</span></li>
-                        <li class="w-full font-normal mt-4">Nb. de Commentaires : <span class="font-semibold" id="remarkStats">15</span></li>
-                        <li class="w-full font-normal mt-4 mb-4">Nb. d'Utilisateurs : <span class="font-semibold" id="remarkStats">15</span></li>
-                        <li class="w-full font-normal mt-4 mb-4">Dernière Inscription : <span class="font-semibold" id="remarkStats">John Doe</span></li>
-                    </ul>
                 </div>
             </div>
             <div class="bg-white w-full rounded-md shadow-md mt-4 sticky flex justify-center items-center flex-wrap overflow-hidden" style="top:25.5rem;">
@@ -342,47 +234,29 @@ export default {
     data() {
         return {
             userProfile: {},
+            posts: null,
             updateProfHidden: true,
         }
     },
     created() {
-        this.getUserProfile();
-        // this.getUserPosts();
+        this.getUserPosts()
     },
     mounted() {
         // if user is !loggued in, redirect to login page
-        if (!document.cookie.includes('userId') && !document.cookie.includes('userLoggued')) {
+        if (!localStorage.getItem('userToken') || !localStorage.getItem('userLoggued')) {
             this.$router.push('/login')
         }
+
+        // Get user profile on local storage
+        this.userProfile = JSON.parse(localStorage.getItem('userProfile'));
     },
     methods: {
-        getUserProfile() {
-            // Get cookie user id and token
-            //  eslint-disable-next-line
-            const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-            //  eslint-disable-next-line
-            const token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-            // Get user profile with userId and token
-            axios.get('http://localhost:5000/api/auth/' + userId, {
-                    headers: {
-                        Authorization: 'Bearer ' + token
-                    }
-                })
-                .then(response => {
-                    this.userProfile = response.data;
-                })
-                .catch(error => {
-                    console.log(error);
-                })
-        },
-
         updateProfile() {
             // Get cookie user id and token
             //  eslint-disable-next-line
-            const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userId = localStorage.getItem('userId');
             //  eslint-disable-next-line
-            const userToken = document.cookie.replace(/(?:(?:^|.*;\s*)userToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userToken = localStorage.getItem('userToken');
 
             const form = document.getElementById('updateProfile');
             const formData = new FormData(form);
@@ -395,7 +269,7 @@ export default {
 
             // Get user profile with userId and token
             axios.put('http://localhost:5000/api/auth/' + userId, {
-                userId: userId,
+                id: userId,
                 familyName: data.familyName,
                 name: data.name,
                 phone: data.phone,
@@ -418,25 +292,67 @@ export default {
         deleteUserAccount() {
             // Get cookie user id and token
             //  eslint-disable-next-line
-            const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userId = localStorage.getItem('userId');
             //  eslint-disable-next-line
-            const token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            const userToken = localStorage.getItem('userToken');
 
             // Delete user account with userId and token
             axios.delete('http://localhost:5000/api/auth/' + userId, {
                     headers: {
-                        Authorization: 'Bearer ' + token
+                        Authorization: 'Bearer ' + userToken
                     }
                 })
                 .then(response => {
                     console.log(response);
                     // Delete cookie userId, token, userLoggued
-                    document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    document.cookie = "userLoggued=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    localStorage.clear()
                     this.$router.push('/login', () => {
                         window.location.reload()
                     })
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+
+        // Get user posts
+        getUserPosts() {
+            //  eslint-disable-next-line
+            const userId = localStorage.getItem('userId');
+            //  eslint-disable-next-line
+            const userToken = localStorage.getItem('userToken');
+
+            axios.get('http://localhost:5000/api/posts/' + userId, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + userToken
+                    }
+                })
+                .then(response => {
+                    this.posts = response.data.posts
+                    console.log(response.data.posts)
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+
+        deletePost() {
+            //  eslint-disable-next-line
+            const userToken = localStorage.getItem('userToken');
+
+            const postId = 2
+
+            // Delete user account with userId and token
+            axios.delete('http://localhost:5000/api/posts/' + postId, {
+                    headers: {
+                        Authorization: 'Bearer ' + userToken
+                    }
+                })
+                .then(response => {
+                    console.log(response);
+                    this.getUserPosts();
                 })
                 .catch(error => {
                     console.log(error);

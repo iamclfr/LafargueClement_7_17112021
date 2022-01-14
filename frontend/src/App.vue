@@ -32,7 +32,7 @@ export default {
   },
   mounted() {
     // check if user is loggued in with cookie
-    this.userLoggued = document.cookie.includes('userId')
+    this.userLoggued = localStorage.getItem('userLoggued')
   },
 }
 

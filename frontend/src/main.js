@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+// import store from './store'
 import './css/app.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faFire, faNewspaper, faBell, faCameraRetro, faMeteor, faBirthdayCake, faPlus, faChevronCircleDown, faSearch, faPaperPlane, faThumbsUp, faCommentAlt, faShare, faCrown, faTrash} from '@fortawesome/free-solid-svg-icons'
@@ -22,6 +22,5 @@ Vue.use(require('vue-moment'), {
 
 new Vue({
   router,
-  store,
   render: h => h(App)
 }).$mount('#app')

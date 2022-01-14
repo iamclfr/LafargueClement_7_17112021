@@ -110,10 +110,10 @@ exports.getUser = async (req, res) => {
     }
 }
 
+// Update user
 exports.updateUser = async (req, res) => {
-    // Get the user with the id in the params
     try {
-        const user = await db.users.findOne({
+        user = await db.users.findOne({
             where: {
                 id: req.params.id
             },
@@ -123,23 +123,24 @@ exports.updateUser = async (req, res) => {
                 message: "Utilisateur non trouvé !",
             });
         } else {
-            // Update the user with the new data
-            const hashedPassword = await bcrypt.hash(req.body.password, 10);
-            await db.users.update({
-                    familyname: req.body.familyname,
-                    name: req.body.name,
-                    phone: req.body.phone,
-                    password: hashedPassword,
-                    updatedAt: now(),
-                }, {
-                    where: {
-                        id: req.params.id
-                    }
-                }),
-                res.status(200).json({
-                    user: user,
-                    message: `Utilisateur ${user.name} modifié !`,
-                });
+            db.users.update({
+                familyName: req.body.familyName,
+                name: req.body.name,
+                phone: req.body.phone,
+                email: req.body.email,
+                birthday: req.body.birthday,
+                updatedAt: now(),
+            }, {
+                where: {
+                    id: user.id,
+                }
+            })
+            .then(() => res.status(200).json({
+                message: "Utilisateur modifié !",
+            }))
+            .catch((error) => res.status(400).json({
+                error: "Erreur lors de la modification de l'utilisateur !",
+            }));
         }
     } catch (error) {
         res.status(500).json({
