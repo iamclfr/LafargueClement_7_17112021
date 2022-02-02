@@ -2,8 +2,6 @@ const db = require('../models');
 const user = db.users;
 const post = db.posts;
 const like = db.like;
-// let user = require('../models/user');
-// let post = require('../models/post');
 const fs = require('fs');
 const {Op} = require('sequelize');
 const { now } = require('sequelize/dist/lib/utils');
@@ -148,13 +146,13 @@ exports.likePost = async (req, res, next) => {
         where: { UserId: userId, PostId: postId },
         });
         if (user) {
-        await db.like.destroy(
+        await like.destroy(
             { where: { UserId: userId, PostId: postId } },
             { truncate: true, restartIdentity: true }
         );
         res.status(200).send({ messageRetour: "vou n'aimez plus ce post" });
         } else {
-        await db.Like.create({
+        await like.create({
             UserId: userId,
             PostId: postId,
         });
