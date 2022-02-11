@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'User', 
         onDelete: 'cascade'
       });
+      Post.hasMany(models.Comment, {
+        as: 'Comments',
+        onDelete: 'cascade'
+      });
     }
   }
   Post.init({
@@ -26,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     content: DataTypes.TEXT,
     imageUrl: DataTypes.STRING,
-    likes: DataTypes.INTEGER,
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE

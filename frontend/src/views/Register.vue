@@ -8,11 +8,11 @@
                 <label for="familyName" hidden>
                     Nom
                 </label>
-                <input id="familyName" type="text" name="familyName" autocomplete="familyName" class="w-full px-4 py-3 border-2 rounded-md lg:w-64" placeholder="Nom" required>
+                <input id="lastName" type="text" name="lastName" autocomplete="lastName" class="w-full px-4 py-3 border-2 rounded-md lg:w-64" placeholder="Nom" required>
                 <label for="name" hidden>
                     Prénom
                 </label>
-                <input id="name" type="text" name="name" autocomplete="name" class="w-full px-4 py-3 mt-4 border-2 rounded-md lg:w-64 lg:mt-0" placeholder="Prénom" required>
+                <input id="firstName" type="text" name="firstName" autocomplete="firstName" class="w-full px-4 py-3 mt-4 border-2 rounded-md lg:w-64 lg:mt-0" placeholder="Prénom" required>
                 <label for="phone" hidden>
                     Téléphone
                 </label>

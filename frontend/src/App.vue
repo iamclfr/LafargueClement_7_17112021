@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header v-if="userLoggued" class="sticky top-0 w-full shadow-md z-50">
+    <header v-if="$auth.isLogged()" class="sticky top-0 w-full shadow-md z-50">
       <!-- Header -->
       <Header />
     </header>
@@ -24,16 +24,7 @@ export default {
   components: {
     Header,
     Footer
-  },
-  data() {
-    return {
-      userLoggued: false,
-    }
-  },
-  mounted() {
-    // check if user is loggued in with cookie
-    this.userLoggued = localStorage.getItem('userLoggued')
-  },
+  }
 }
 
   /*************************************************************************** /

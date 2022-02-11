@@ -1,195 +1,167 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const { hashPassword, checkPassword, createUserJWT } = require('../helpers');
 const db = require('../models');
 const {Op} = require('sequelize');
 const { now } = require('sequelize/dist/lib/utils');
 let user = require('../models/user');
-require('dotenv').config();
 
-exports.register = async (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
-        .then((hash) => {
-            db.users.create({
-                familyName: req.body.familyName,
-                name: req.body.name,
-                phone: req.body.phone,
-                email: req.body.email,
-                password: hash,
-                birthday: req.body.birthday,
-                createdAt: now(),
-                updatedAt: now(),
-                profilePicture: null,
-                admin: 0,
-            })
-            .then(() => res.status(201).json({
-                message: "Utilisateur créé !",
-            }))
-            .catch((error) => res.status(400).json({
-                error: "Erreur lors de la création de l'utilisateur ! blabla",
-            }));
-        })
-        .catch((error) => res.status(500).json({
-            error: "Erreur lors de la création de l'utilisateur !",
-            message: error.message,
-        }));
+exports.register = async (req, res) => {
+    try {
+        const { email, password, firstName, lastName, birthday } = req.body;
+        const hashedPassword = await hashPassword(password);
+        const user = await db.User.create({
+            email,
+            password: hashedPassword,
+            firstName,
+            lastName,
+            birthday,
+        });
+        res.status(201).json({
+            message: 'User created',
+            token: createUserJWT(user.id),
+            user,
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message,
+        });
+    }
+};
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await db.User.findOne({
+            where: {
+                email,
+            },
+        });
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
+        if(!checkPassword(password, user.password)) {
+            return res.status(403).json({
+                error: 'Incorrect password',
+            });
+        }
+        res.status(200).json({
+            message: 'User logged in',
+            token: createUserJWT(user.id),
+            user,
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: error.message,
+        });
+    }
 };
 
 
-exports.login = async (req, res, next) => {
-    user = await db.users.findOne({
-        where: {
-            [Op.or]: [{
-                email: req.body.email
-            }],
-        },
-    })
-    .then(user => {
-        if (!user) {
-            return res.status(401).json({
-                message: "Utilisateur non trouvé !",
-            })
-        }
-        bcrypt.compare(req.body.password, user.password)
-        .then(validPassword => {
-            if (!validPassword) {
-                return res.status(401).json({
-                    message: "Mot de passe incorrect !",
-                })
-            }
-            // Update date of last connection
-            db.users.update({
-                updatedAt: now(),
-            }, {
-                where: {
-                    id: user.id,
-                }
-            })
-            res.status(200).json({
-                userId: user.id,
-                admin: user.admin,
-                token: jwt.sign({
-                    userId: user.id
-                }, process.env.TOKEN, {
-                    expiresIn: "24h"
-                }),
-            })
-        })
-        .catch(error => res.status(500).json({
-            error
-        }))
-    })
-    .catch(error => res.status(500).json({
-        error
-    }))
-}
 
 
+// Get user by id
 exports.getUser = async (req, res) => {
     try {
-        const user = await db.users.findOne({
+        const user = await db.User.findOne({
             where: {
-                id: req.params.id
+                id: req.params.id,
             },
         });
         if (!user) {
-            res.status(404).json({
-                message: "Utilisateur non trouvé !",
-            });
-        } else {
-            let birthdayToHuman = new Date(user.birthday * 1000).toLocaleDateString("fr-FR")
-            user.birthday = birthdayToHuman
-            res.status(200).json({
-                user: user,
-                message: `Utilisateur ${user.name} trouvé !`,
+            return res.status(404).json({
+                error: 'User not found',
             });
         }
+        res.status(200).json({
+            message: 'User found',
+            user,
+        });
     } catch (error) {
         res.status(500).json({
-            error: "Erreur lors de la recherche de l'utilisateur !",
+            error: error.message,
         });
     }
-}
+};
 
-// Update user
+// Update user with id if token is valid
 exports.updateUser = async (req, res) => {
     try {
-        user = await db.users.findOne({
+        const { password, firstName, lastName } = req.body;
+        const user = await db.User.findOne({
             where: {
-                id: req.params.id
+                id: req.params.id,
             },
         });
         if (!user) {
-            res.status(404).json({
-                message: "Utilisateur non trouvé !",
+            return res.status(404).json({
+                error: 'User not found',
             });
-        } else {
-            db.users.update({
-                familyName: req.body.familyName,
-                name: req.body.name,
-                phone: req.body.phone,
-                email: req.body.email,
-                birthday: req.body.birthday,
-                updatedAt: now(),
-            }, {
-                where: {
-                    id: user.id,
-                }
-            })
-            .then(() => res.status(200).json({
-                message: "Utilisateur modifié !",
-            }))
-            .catch((error) => res.status(400).json({
-                error: "Erreur lors de la modification de l'utilisateur !",
-            }));
         }
+        if (password) {
+            const hashedPassword = await hashPassword(password);
+            user.password = hashedPassword;
+        }
+        if (firstName) {
+            user.firstName = firstName;
+        }
+        if (lastName) {
+            user.lastName = lastName;
+        }
+        await user.save();
+        res.status(200).json({
+            message: 'User updated',
+            user,
+        });
     } catch (error) {
         res.status(500).json({
-            error: "Erreur lors de la modification de l'utilisateur !",
+            error: error.message,
         });
     }
-}
+};
 
+// Get all users
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await db.users.findAll({
-            attributes: ["familyname", "name", "phone", "email", "birthday", "profilepicture", "admin"],
-            where: {
-                id: {
-                    [Op.ne]: 1,
-                },
-            },
+        const users = await db.User.findAll({
+            attributes: ['id', 'firstName', 'lastName', 'email', 'birthday'],
         });
-        res.status(200).send(users);
+        if (!users) {
+            return res.status(404).json({
+                error: 'Users not found',
+            });
+        }
+        res.status(200).json({
+            message: 'Users found',
+            users,
+        });
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).json({
+            error: error.message,
+        });
     }
-}
+};
 
+// Delete user with id if token is valid
 exports.deleteUser = async (req, res) => {
     try {
-        const user = await db.users.findOne({
+        const user = await db.User.findOne({
             where: {
-                id: req.params.id
+                id: req.params.id,
             },
         });
         if (!user) {
-            res.status(404).json({
-                message: "Utilisateur non trouvé !",
-            });
-        } else {
-            await db.users.destroy({
-                where: {
-                    id: req.params.id,
-                },
-            });
-            res.status(200).json({
-                message: `Utilisateur ${user.name} supprimé !`,
+            return res.status(404).json({
+                error: 'User not found',
             });
         }
-    }
-    catch (error) {
+        await user.destroy();
+        res.status(200).json({
+            message: 'User deleted',
+        });
+    } catch (error) {
         res.status(500).json({
-            error: "Erreur lors de la suppression de l'utilisateur !",
+            error: error.message,
         });
     }
-}
+};

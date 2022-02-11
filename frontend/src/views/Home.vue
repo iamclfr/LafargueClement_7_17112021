@@ -7,7 +7,7 @@
                     <text x="-1.5" y="15" class="font-black groupomania-color-blue" style="letter-spacing:-1.6px;text-shadow: rgb(0 0 0 / 5%) 0px 4px 4px;">PUBLICATIONS</text>
                 </svg>
             </div>
-            <button v-on:click="createPostHidden = !createPostHidden" class="createPostBtn bg-white w-full mb-4 rounded-md flex justify-between items-center shadow-md overflow-hidden sticky top-14 lg:relative lg:top-0">
+            <button v-on:click="createPostHidden = !createPostHidden" class="createPostBtn bg-white w-full mb-4 mx-2 rounded-md flex justify-between items-center shadow-md overflow-hidden sticky top-14 lg:relative lg:top-0">
                 <div class="w-28 flex justify-center items-center">
                     <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full p-2">
                 </div>
@@ -19,8 +19,8 @@
                 </div>
             </button>
             <!-- START TEMPLATE POST -->
-            <div v-for="post in posts" :key="post.id" :id="post.id" class="relative bg-white w-full mb-4 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
-                <button v-if="isAdmin" :id="post.id" v-on:click="deleteThePost" class="absolute right-2 top-1">
+            <div v-for="post in posts" :key="post.id" :id="post.id" class="relative bg-white w-full mb-4 mx-2 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
+                <button v-if="post.User.isAdmin" :id="post.id" v-on:click="deleteThePost" class="absolute right-2 top-1">
                     <font-awesome-icon icon="trash" />
                 </button>
                 <div class="w-full flex flex-wrap justify-start items-center">
@@ -29,7 +29,7 @@
                             <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full">
                         </div>
                         <div class="flex flex-wrap justify-start items-center text-left">
-                            <a href="/profile" class="postUser w-full text-sm">USER ID : {{ post.userId }}</a>
+                            <a href="/profile" class="postUser w-full text-sm">{{ post.User.firstName }} {{ post.User.lastName }}</a>
                             <p class="postTime text-xs text-gray-400">{{ post.createdAt }}</p>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                         <img src="/assets/images/bg-img-login-2.jpg" alt="Icone Groupomania" class="w-full">
                     </div>
                     <div class="w-full flex justify-between items-center">
-                        <div class="w-2/4 flex justify-start py-2 pl-7">154 Likes</div>
+                        <div class="w-2/4 flex justify-start py-2 pl-7"></div>
                         <div class="w-2/4 flex justify-end py-2 pr-7">26 Commentaires</div>
                     </div>
                     <div class="w-full flex justify-center items-center">
@@ -51,13 +51,7 @@
                     </div>
                     <div class="w-full flex justify-between items-center">
                         <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="thumbs-up" class="mr-2"/>
-                                J'aime
-                            </button>
-                        </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
+                            <button class="comments-btn">
                                 <font-awesome-icon icon="comment-alt" class="mr-2"/>
                                 Commenter
                             </button>
@@ -68,6 +62,36 @@
                                 Partager
                             </button>
                         </div>
+                    </div>
+                    <div class="comments-container w-full">
+                        <div class="w-full flex justify-center items-center">
+                            <hr class="w-11/12 border-gray-400">
+                        </div>
+                        <div class="w-full justify-start items-center my-2">
+                            <h3 class="ml-7 text-lg">Commentaires</h3>
+                        </div>
+                        <div v-for="comment in post.Comments" :key="comment.id" :id="comment.id" class="oneComment px-5">
+                            <div class="inline-flex justify-start items-center">
+                                <div class="flex flex-wrap justify-start items-center text-left ml-2">
+                                    <a href="/profile" class="postUser w-full text-sm">{{ comment.User.firstName }} {{ comment.User.lastName }}</a>
+                                    <p class="postTime text-xs text-gray-400">{{ comment.createdAt }}</p>
+                                </div>
+                            </div>
+                            <div class="postContent w-full flex justify-center items-center mb-2">
+                                <p class="text-left px-2">{{ comment.content }}</p>
+                            </div>
+                        </div>
+                        <button class="createCommentBtn bg-white w-full rounded-md flex justify-between items-center overflow-hidden sticky top-14 lg:relative lg:top-0">
+                            <div class="w-28 flex justify-center items-center">
+                                <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full p-2">
+                            </div>
+                            <div class="w-full flex justify-center items-center">
+                                <div class="w-full px-4 py-2 focus:outline-none border-2 rounded-md text-gray-400 text-left">Créer un Commentaire</div>
+                            </div>
+                            <div class="w-28 h-full flex justify-center items-center">
+                                <font-awesome-icon icon="paper-plane" class="text-gray-400" style="transform: rotate(50deg); font-size: 2rem;"/>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -81,7 +105,6 @@
                 <div class="w-full">
                     <ul class="w-full pl-4">
                         <li class="w-full font-normal mt-4">Nb. de Posts : <span class="font-semibold" id="postStats">{{ postsCounter }}</span></li>
-                        <li class="w-full font-normal mt-4">Nb. de Likes : <span class="font-semibold" id="likeStats">15</span></li>
                         <li class="w-full font-normal mt-4">Nb. de Commentaires : <span class="font-semibold" id="remarkStats">15</span></li>
                         <li class="w-full font-normal mt-4 mb-4">Nb. d'Utilisateurs : <span class="font-semibold" id="remarkStats">15</span></li>
                         <li class="w-full font-normal mt-4 mb-4">Dernière Inscription : <span class="font-semibold" id="remarkStats">John Doe</span></li>
@@ -90,7 +113,7 @@
             </div>
             <div class="bg-white w-full rounded-md shadow-md mt-4 sticky top-16 flex justify-center items-center flex-wrap overflow-hidden">
                 <div class="flex justify-start items-center h-20 groupomania-bg-blue w-full">
-                    <h1 class="pl-4 text-lg text-white font-semibold">Quoi de Neuf ?</h1>
+                    <h1 class="pl-4 text-lg text-white font-semibold">Quoi de Neuf {{ $auth.getUser().firstName }} ?</h1>
                 </div>
                 <div class="w-full flex justify-center mt-4">
                     <router-link to="/profile" class="w-full py-2 px-4 bg-white text-center groupomania-color-blue border-2 groupomania-border-blue font-bold rounded-md mx-4 shadow-md">Voir mon Profil</router-link>
@@ -150,91 +173,28 @@
     </div>
 </template>
 <script>
-    import axios from 'axios';
     export default {
         data() {
         return {
             createPostHidden: true,
             posts: [],
             postsCounter: 0,
-            isAdmin: false
         }
     },
+    mounted() {
+        this.getAllPosts();
+    },
     methods: {
-
-        /**
-         * CRÉATION D'UN POST
-         */
-        createPost(event) {
-            event.preventDefault()
-            const form = document.getElementById('formCreatePost')
-            const formData = new FormData(form)
-            const data = {}
-
-            for (let [key, value] of formData.entries()) {
-                data[key] = value;
-            }
-
-            if (data.title === '' || data.content === '') {
-                this.errors = ['Veuillez remplir tous les champs']
-                form.classList.add('shake');
-                setTimeout(() => {
-                    form.classList.remove('shake');
-                }, 1000);
-                // Tailwind create pop-up message for user to fill all fields
-                form.insertAdjacentHTML('beforebegin', `
-                    <div id="popupErrorMsg" class="absolute -top-14 w-full groupomania-bg-orange text-white text-center font-bold rounded-md p-2 m-2">
-                        Tout les champs doivent être remplis !
-                    </div>
-                `);
-                setTimeout(() => {
-                    document.getElementById('popupErrorMsg').remove();
-                }, 5000);
-                return
-            }
-
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
-            //  eslint-disable-next-line
-            const userId = localStorage.getItem('userId');
-
-            axios.post('http://localhost:5000/api/posts', data , {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + userToken
-                },
-            })
-            .then(response => {
-                console.log(response)
-                this.createPostHidden = true
-                // Refresh the page
-                window.location.reload()
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        },
 
         /**
          * RÉCUPÉRATION DE TOUT LES POSTS
          */
 
         getAllPosts() {
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
-            axios.get('http://localhost:5000/api/posts', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + userToken
-                }
-            })
+            this.$auth.axios().get('posts')
             .then(response => {
                 this.posts = response.data.posts
                 console.log(response.data.posts)
-                this.postsCounter = response.data.postsCounter
-                console.log(this.postsCounter)
             })
             .catch(error => {
                 console.log(error)
@@ -242,46 +202,88 @@
         },
 
         /**
+         * CRÉATION D'UN POST
+         */
+        // createPost(event) {
+        //     event.preventDefault()
+        //     const form = document.getElementById('formCreatePost')
+        //     const formData = new FormData(form)
+        //     const data = {}
+
+        //     for (let [key, value] of formData.entries()) {
+        //         data[key] = value;
+        //     }
+
+        //     if (data.title === '' || data.content === '') {
+        //         this.errors = ['Veuillez remplir tous les champs']
+        //         form.classList.add('shake');
+        //         setTimeout(() => {
+        //             form.classList.remove('shake');
+        //         }, 1000);
+        //         // Tailwind create pop-up message for user to fill all fields
+        //         form.insertAdjacentHTML('beforebegin', `
+        //             <div id="popupErrorMsg" class="absolute -top-14 w-full groupomania-bg-orange text-white text-center font-bold rounded-md p-2 m-2">
+        //                 Tout les champs doivent être remplis !
+        //             </div>
+        //         `);
+        //         setTimeout(() => {
+        //             document.getElementById('popupErrorMsg').remove();
+        //         }, 5000);
+        //         return
+        //     }
+
+        //     //  eslint-disable-next-line
+        //     const userToken = localStorage.getItem('userToken');
+        //     //  eslint-disable-next-line
+        //     const userId = localStorage.getItem('userId');
+
+        //     // Put userId in data
+        //     data.userId = userId
+
+        //     // Create new post
+        //     axios.post('http://localhost:5000/api/posts', data, {
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'Accept': 'application/json',
+        //             'Authorization': 'Bearer ' + userToken
+        //         }
+        //     })
+        //     .then(response => {
+        //         console.log(response)
+        //         this.createPostHidden = true
+        //         this.getAllPosts()
+        //         this.getUser()
+        //     })
+        //     .catch(error => {
+        //         console.log(error)
+        //     })
+        // },
+
+        /**
          * SUPPRESSION D'UN POST
          */
-        deleteThePost() {
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
+        // deleteThePost() {
+        //     //  eslint-disable-next-line
+        //     const userToken = localStorage.getItem('userToken');
 
-            const postId = this.postId
+        //     const postId = this.postId
 
-            axios.delete('http://localhost:5000/api/posts/' + postId, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + userToken
-                }
-            })
-            .then(response => {
-                console.log(response)
-                // Refresh the page
-                // window.location.reload()
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
-    },
-    mounted() {
-        
-        /**
-         * VÉRIFICATION SI L'UTILISATEUR EST BIEN CONNECTÉ ET QUE SON ID EST BIEN RÉCUPÉRÉ
-         */
-
-        if (!localStorage.getItem('userToken') || !localStorage.getItem('userLoggued')) {
-            this.$router.push('/login')
-        }
-
-        if(localStorage.getItem('isAdmin') === 'true') {
-            this.isAdmin = true
-        }
-
-        this.getAllPosts();
+        //     axios.delete('http://localhost:5000/api/posts/' + postId, {
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'Accept': 'application/json',
+        //             'Authorization': 'Bearer ' + userToken
+        //         }
+        //     })
+        //     .then(response => {
+        //         console.log(response)
+        //         // Refresh the page
+        //         // window.location.reload()
+        //     })
+        //     .catch(error => {
+        //         console.log(error)
+        //     })
+        // }
     }
 }
 </script>

@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
     data() {
         return {
@@ -49,7 +48,7 @@ export default {
     },
     mounted() {
         // if user is loggued in, redirect to home
-        if (document.cookie.includes('userId') && document.cookie.includes('userLoggued')) {
+        if (this.$auth.isLogged()) {
             this.$router.push('/')
         }
         this.loginPage = document.getElementById('loginPage')
@@ -95,27 +94,9 @@ export default {
             data.email += '@groupomania.com';
 
             // TODO: Login user with axios and redirect to home page if success else display error message in console
-            axios.post('http://localhost:5000/api/auth/login', data, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+            this.$auth.axios().post('auth/login', data)
                 .then(response => {
-                    // Set cookie userId and userLoggued
-                    // document.cookie = `userId=${response.data.userId}`
-                    // document.cookie = `userToken=${response.data.token}`
-                    // document.cookie = 'userLoggued=true'
-
-                    localStorage.setItem('userId', response.data.userId)
-                    localStorage.setItem('userToken', response.data.token)
-                    localStorage.setItem('userLoggued', true)
-
-                    if (response.data.admin === true) {
-                       localStorage.setItem('isAdmin', true)                       
-                    } else {
-                       localStorage.setItem('isAadmin', false)
-                    }
-
+                    this.$auth.login(response.data.user, response.data.token)
                     // Redirect to home page
                     this.$router.push('/', () => {
                         window.location.reload()

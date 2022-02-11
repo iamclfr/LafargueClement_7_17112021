@@ -9,7 +9,7 @@
                             <font-awesome-icon icon="camera-retro" class="groupomania-color-blue text-lg" />
                         </button>
                     </div>
-                    <span class="absolute right-6 top-24 font-bold">{{ userProfile.user.name }} {{ userProfile.user.familyName }}</span>
+                    <span class="absolute right-6 top-24 font-bold">{{ user.firstName }} {{ user.lastName }}</span>
                 </div>
                 <div class="flex justify-center items-center flex-wrap mt-16">
                     <button v-on:click="updateProfHidden = !updateProfHidden" class="w-full py-2 px-4 groupomania-bg-orange text-white font-bold border-2 groupomania-border-orange rounded-md mx-4 mt-2 shadow-md">Modifier mon Profil</button>
@@ -22,7 +22,7 @@
                         </div>
                         <div class="flex justify-center items-center flex-wrap">
                             <span class="w-full text-center">Anniversaire</span>
-                            <span class="w-full text-center">{{ userProfile.user.birthday }}
+                            <span class="w-full text-center">{{ user.birthday }}
                                 <font-awesome-icon icon="birthday-cake" />
                             </span>
                         </div>
@@ -41,9 +41,9 @@
                 </svg>
             </div>
             <!-- START TEMPLATE POST -->
-            <div v-for="post in posts" :key="post.id" class="relative bg-white w-full mb-4 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
-                <button :id="post.id" v-on:click="deletePost"  class="absolute right-2 top-1">
-                    <font-awesome-icon :id="post.id" icon="trash" />
+            <div v-for="post in posts" :key="post.id" :id="post.id" class="relative bg-white w-full mb-4 mx-2 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
+                <button v-if="post.User.isAdmin" :id="post.id" v-on:click="deleteThePost" class="absolute right-2 top-1">
+                    <font-awesome-icon icon="trash" />
                 </button>
                 <div class="w-full flex flex-wrap justify-start items-center">
                     <div class="inline-flex justify-start items-center">
@@ -51,7 +51,7 @@
                             <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full">
                         </div>
                         <div class="flex flex-wrap justify-start items-center text-left">
-                            <a href="/profile" class="postUser w-full text-sm">{{ userProfile.user.name }} {{ userProfile.user.familyName }}</a>
+                            <a href="/profile" class="postUser w-full text-sm">{{ post.User.firstName }} {{ post.User.lastName }}</a>
                             <p class="postTime text-xs text-gray-400">{{ post.createdAt }}</p>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                         <img src="/assets/images/bg-img-login-2.jpg" alt="Icone Groupomania" class="w-full">
                     </div>
                     <div class="w-full flex justify-between items-center">
-                        <div class="w-2/4 flex justify-start py-2 pl-7">154 Likes</div>
+                        <div class="w-2/4 flex justify-start py-2 pl-7"></div>
                         <div class="w-2/4 flex justify-end py-2 pr-7">26 Commentaires</div>
                     </div>
                     <div class="w-full flex justify-center items-center">
@@ -73,13 +73,7 @@
                     </div>
                     <div class="w-full flex justify-between items-center">
                         <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="thumbs-up" class="mr-2"/>
-                                J'aime
-                            </button>
-                        </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
+                            <button class="comments-btn">
                                 <font-awesome-icon icon="comment-alt" class="mr-2"/>
                                 Commenter
                             </button>
@@ -91,8 +85,39 @@
                             </button>
                         </div>
                     </div>
+                    <div class="comments-container w-full hidden">
+                        <div class="w-full flex justify-center items-center">
+                            <hr class="w-11/12 border-gray-400">
+                        </div>
+                        <div class="w-full justify-start items-center my-2">
+                            <h3 class="ml-7 text-lg">Commentaires</h3>
+                        </div>
+                        <div v-for="comment in post.Comments" :key="comment.id" :id="comment.id" class="oneComment px-5">
+                            <div class="inline-flex justify-start items-center">
+                                <div class="flex flex-wrap justify-start items-center text-left ml-2">
+                                    <a href="/profile" class="postUser w-full text-sm">{{ comment.UserId }}</a>
+                                    <p class="postTime text-xs text-gray-400">{{ comment.createdAt }}</p>
+                                </div>
+                            </div>
+                            <div class="postContent w-full flex justify-center items-center mb-2">
+                                <p class="text-left px-2">{{ comment.content }}</p>
+                            </div>
+                        </div>
+                        <button class="createCommentBtn bg-white w-full rounded-md flex justify-between items-center overflow-hidden sticky top-14 lg:relative lg:top-0">
+                            <div class="w-28 flex justify-center items-center">
+                                <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full p-2">
+                            </div>
+                            <div class="w-full flex justify-center items-center">
+                                <div class="w-full px-4 py-2 focus:outline-none border-2 rounded-md text-gray-400 text-left">Créer un Commentaire</div>
+                            </div>
+                            <div class="w-28 h-full flex justify-center items-center">
+                                <font-awesome-icon icon="paper-plane" class="text-gray-400" style="transform: rotate(50deg); font-size: 2rem;"/>
+                            </div>
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!-- END TEMPLATE POST -->
             <button class="bg-black text-white w-3/6 mb-4 rounded-md flex justify-center items-center shadow-md" style="height: 50px;">
                 Voir Plus
             </button>
@@ -233,13 +258,10 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            userProfile: {},
             posts: null,
+            user: {},
             updateProfHidden: true,
         }
-    },
-    created() {
-        this.getUserPosts()
     },
     mounted() {
         // if user is !loggued in, redirect to login page
@@ -247,73 +269,95 @@ export default {
             this.$router.push('/login')
         }
 
-        // Get user profile on local storage
-        this.userProfile = JSON.parse(localStorage.getItem('userProfile'));
+        console.log(this.$auth)
+
+        this.getUser();
+        this.getUserPosts()
     },
     methods: {
-        updateProfile() {
-            // Get cookie user id and token
-            //  eslint-disable-next-line
-            const userId = localStorage.getItem('userId');
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
-
-            const form = document.getElementById('updateProfile');
-            const formData = new FormData(form);
-            const data = {};
-
-            for (let [key, value] of formData.entries()) {
-                data[key] = value;
-                console.log(key, value);
-            }
-
-            // Get user profile with userId and token
-            axios.put('http://localhost:5000/api/auth/' + userId, {
-                id: userId,
-                familyName: data.familyName,
-                name: data.name,
-                phone: data.phone,
-                password: data.password,
-
-                }, {
-                    headers: {
-                        Authorization: 'Bearer ' + userToken
-                    }
-                })
-                .then(response => {
-                    console.log(response);
-                    this.updateProfHidden = true;
-                    this.getUserProfile();
-                })
-                .catch(error => {
-                    console.log(error);
-                })
-        },
-        deleteUserAccount() {
-            // Get cookie user id and token
-            //  eslint-disable-next-line
-            const userId = localStorage.getItem('userId');
+        /**
+         * RÉCUPÉRATION DE l'UTILISATEUR
+         */
+        getUser() {
             //  eslint-disable-next-line
             const userToken = localStorage.getItem('userToken');
-
-            // Delete user account with userId and token
-            axios.delete('http://localhost:5000/api/auth/' + userId, {
-                    headers: {
-                        Authorization: 'Bearer ' + userToken
-                    }
-                })
-                .then(response => {
-                    console.log(response);
-                    // Delete cookie userId, token, userLoggued
-                    localStorage.clear()
-                    this.$router.push('/login', () => {
-                        window.location.reload()
-                    })
-                })
-                .catch(error => {
-                    console.log(error);
-                })
+            const userId = localStorage.getItem('userId');
+            axios.get('http://localhost:5000/api/auth/' + userId, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + userToken
+                }
+            })
+            .then(response => {
+                this.user = response.data.user
+                console.log(response.data.user)
+            })
+            .catch(error => {
+                console.log(error)
+            })
         },
+        // updateProfile() {
+        //     //  eslint-disable-next-line
+        //     const userToken = localStorage.getItem('userToken');
+        //     const userId = localStorage.getItem('userId');
+
+        //     const form = document.getElementById('updateProfile');
+        //     const formData = new FormData(form);
+        //     const data = {};
+
+        //     for (let [key, value] of formData.entries()) {
+        //         data[key] = value;
+        //         console.log(key, value);
+        //     }
+
+        //     // Get user profile with userId and token
+        //     axios.put('http://localhost:5000/api/auth/' + userId, {
+        //         id: userId,
+        //         familyName: data.familyName,
+        //         name: data.name,
+        //         phone: data.phone,
+        //         password: data.password,
+
+        //         }, {
+        //             headers: {
+        //                 Authorization: 'Bearer ' + userToken
+        //             }
+        //         })
+        //         .then(response => {
+        //             console.log(response);
+        //             this.updateProfHidden = true;
+        //             this.getUserProfile();
+        //         })
+        //         .catch(error => {
+        //             console.log(error);
+        //         })
+        // },
+        // deleteUserAccount() {
+        //     // Get cookie user id and token
+        //     //  eslint-disable-next-line
+        //     const userId = localStorage.getItem('userId');
+        //     //  eslint-disable-next-line
+        //     const userToken = localStorage.getItem('userToken');
+
+        //     // Delete user account with userId and token
+        //     axios.delete('http://localhost:5000/api/auth/' + userId, {
+        //             headers: {
+        //                 Authorization: 'Bearer ' + userToken
+        //             }
+        //         })
+        //         .then(response => {
+        //             console.log(response);
+        //             // Delete cookie userId, token, userLoggued
+        //             localStorage.clear()
+        //             this.$router.push('/login', () => {
+        //                 window.location.reload()
+        //             })
+        //         })
+        //         .catch(error => {
+        //             console.log(error);
+        //         })
+        // },
 
         // Get user posts
         getUserPosts() {

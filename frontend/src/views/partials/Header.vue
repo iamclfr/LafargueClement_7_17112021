@@ -32,7 +32,7 @@
                     <div class="flex justify-start item-center flex-wrap ml-2">
                         <div class="flex w-full">
                             <!-- Display user name -->
-                            <span class="text-sm font-bold">{{ userProfile.user.name }} {{ userProfile.user.familyName }}</span>
+                            <span class="text-sm font-bold">{{ $auth.getUser().firstName }} {{ $auth.getUser().lastName }} </span>
                         </div>
                     </div>
                 </div>
@@ -89,98 +89,20 @@
 
 
 <script>
-    import axios from 'axios'
     export default { 
         data() {
             return {
-                userProfile: {},
                 subHidden: true,
                 // userMenuBtn: false,
                 // nightShift: false,
             }
         },
-        mounted() {
-            this.getUserProfile();
-            // this.userMenuBtn = document.getElementById('userMenuBtn');
-            // this.subMenu = document.getElementById('subMenu');
-            // this.nightShift = document.getElementById('nightShift');
-            // this.btnToggleSubMenu()
-            // this.btnToggleNightShift()
-
-        },
         methods: {
-            getUserProfile() {
-                // Get cookie user id and token
-                const userId = localStorage.getItem('userId');
-                const userToken = localStorage.getItem('userToken');
-
-                // Get user profile with userId and token
-                axios.get('http://localhost:5000/api/auth/' + userId, {
-                        headers: {
-                            Authorization: 'Bearer ' + userToken
-                        }
-                    })
-                    .then(response => {
-                        localStorage.setItem('userProfile', JSON.stringify(response.data));
-                        this.userProfile = JSON.parse(localStorage.getItem('userProfile'));
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    })
-            },
-            // On click on user menu button display sub menu
-            // btnToggleSubMenu() {
-            //     this.userMenuBtn.addEventListener('click', () => {
-            //         this.subMenu.classList.toggle('hidden');
-            //     })
-            // },
-            // // On click on night shift button display night shift
-            // btnToggleNightShift() {
-            //     this.nightShift.addEventListener('click', () => {
-            //         if (!document.getElementById('scripty-night-mode')) {
-            //             var background_color = "#fac563";
-            //             var opacity = "0.6080";
-                        
-            //             var divId = "scripty-night-mode";
-            //             var div = document.createElement("div");
-            //             div.id = divId;
-            //             div.setAttribute(
-            //                 "style",
-            //                 `transition: opacity 0.1s ease 0s;
-            //                 z-index: 2147483647;
-            //                 margin: 0;
-            //                 border-radius: 0;
-            //                 padding: 0;
-            //                 background: ${background_color};
-            //                 pointer-events: none;
-            //                 position: fixed;
-            //                 top: -10%;
-            //                 right: -10%;
-            //                 width: 120%;
-            //                 height: 120%;
-            //                 opacity: ${opacity};
-            //                 mix-blend-mode: multiply;
-            //                 display: block;`
-            //             );
-            //             if (!document.getElementById(divId)) {
-            //                 document.documentElement.appendChild(div);
-            //             }
-            //             document.querySelector('#nightShift svg').setAttribute('fill', '#000')
-            //         } else {
-            //             document.getElementById('scripty-night-mode').remove();
-            //             document.querySelector('#nightShift svg').setAttribute('fill', '#fff')
-            //         }
-            //     })
-            // },
 
             // Logout function
             logOut() {
-                // Remove all cookies
-                document.cookie.split(";").forEach(function(c) {
-                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-                });
-                localStorage.clear()
-                window.location.href = '/login';
+                this.$auth.logout()
+                this.$router.push('/login')
             }
             
         }
