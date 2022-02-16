@@ -9,7 +9,7 @@
                             <font-awesome-icon icon="camera-retro" class="groupomania-color-blue text-lg" />
                         </button>
                     </div>
-                    <span class="absolute right-6 top-24 font-bold">{{ user.firstName }} {{ user.lastName }}</span>
+                    <span class="absolute right-6 top-24 font-bold">{{ $auth.getUser().firstName }} {{ $auth.getUser().lastName }}</span>
                 </div>
                 <div class="flex justify-center items-center flex-wrap mt-16">
                     <button v-on:click="updateProfHidden = !updateProfHidden" class="w-full py-2 px-4 groupomania-bg-orange text-white font-bold border-2 groupomania-border-orange rounded-md mx-4 mt-2 shadow-md">Modifier mon Profil</button>
@@ -22,7 +22,7 @@
                         </div>
                         <div class="flex justify-center items-center flex-wrap">
                             <span class="w-full text-center">Anniversaire</span>
-                            <span class="w-full text-center">{{ user.birthday }}
+                            <span class="w-full text-center">{{ $auth.getUser().birthday }} 
                                 <font-awesome-icon icon="birthday-cake" />
                             </span>
                         </div>
@@ -30,19 +30,19 @@
                     <router-link to="/" class="w-full py-2 px-4 groupomania-bg-blue text-center text-white font-bold border-2 groupomania-border-blue rounded-md mx-4 my-4 shadow-md">Créer un Post</router-link>
                 </div>
             </div>
-            <div class="bg-transparent w-full mb-4 hidden lg:flex justify-center items-center relative" style="height: 74px;">
+            <div class="bg-transparent w-full mb-4 mx-2 hidden lg:flex justify-center items-center relative" style="height: 74px;">
                 <svg viewBox="0 0 101 18.7" fill="#ffffff">
                     <text x="-1.5" y="15" class="font-black groupomania-color-blue" style="letter-spacing:-1.6px;text-shadow: rgb(0 0 0 / 5%) 0px 4px 4px;">MES</text>
                 </svg>
             </div>
-            <div class="bg-transparent w-full mb-4 flex justify-center items-center relative" style="height: 74px;">
+            <div class="bg-transparent w-full mb-4 mx-2 flex justify-center items-center relative" style="height: 74px;">
                 <svg viewBox="0 0 101 18.7" fill="#ffffff">
                     <text x="-1.5" y="15" class="font-black groupomania-color-blue" style="letter-spacing:-1.6px;text-shadow: rgb(0 0 0 / 5%) 0px 4px 4px;">PUBLICATIONS</text>
                 </svg>
             </div>
             <!-- START TEMPLATE POST -->
             <div v-for="post in posts" :key="post.id" :id="post.id" class="relative bg-white w-full mb-4 mx-2 rounded-md flex justify-center items-start shadow-md overflow-hidden border border-gray-400">
-                <button v-if="post.User.isAdmin" :id="post.id" v-on:click="deleteThePost" class="absolute right-2 top-1">
+                <button :id="post.id" v-on:click="deleteThePost(post.id)" class="absolute right-2 top-1">
                     <font-awesome-icon icon="trash" />
                 </button>
                 <div class="w-full flex flex-wrap justify-start items-center">
@@ -51,8 +51,8 @@
                             <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full">
                         </div>
                         <div class="flex flex-wrap justify-start items-center text-left">
-                            <a href="/profile" class="postUser w-full text-sm">{{ post.User.firstName }} {{ post.User.lastName }}</a>
-                            <p class="postTime text-xs text-gray-400">{{ post.createdAt }}</p>
+                            <a href="/profile" class="postUser w-full text-sm">{{ $auth.getUser().firstName }} {{ $auth.getUser().lastName }}</a>
+                            <p class="postTime text-xs text-gray-400">{{ post.updatedAt | formatDate }}</p>
                         </div>
                     </div>
                     <div class="postTitle w-full justify-start items-center my-2">
@@ -65,27 +65,20 @@
                         <img src="/assets/images/bg-img-login-2.jpg" alt="Icone Groupomania" class="w-full">
                     </div>
                     <div class="w-full flex justify-between items-center">
-                        <div class="w-2/4 flex justify-start py-2 pl-7"></div>
-                        <div class="w-2/4 flex justify-end py-2 pr-7">26 Commentaires</div>
-                    </div>
-                    <div class="w-full flex justify-center items-center">
-                        <hr class="w-11/12 border-gray-400">
-                    </div>
-                    <div class="w-full flex justify-between items-center">
                         <div class="w-1/3 flex justify-center items-center py-2">
-                            <button class="comments-btn">
+                            <button class="comments-btn" v-on:click="toggleComments = !toggleComments" >
                                 <font-awesome-icon icon="comment-alt" class="mr-2"/>
                                 Commenter
                             </button>
                         </div>
-                        <div class="w-1/3 flex justify-center items-center py-2">
-                            <button>
-                                <font-awesome-icon icon="share" class="mr-2"/>
-                                Partager
-                            </button>
+                        <div class="w-1/3 flex justify-center items-center py-2" v-if="post.Comments.length">
+                            {{ post.Comments.length }} commentaires 
+                        </div>
+                        <div class="w-1/3 flex justify-center items-center py-2" v-if="!post.Comments.length">
+                            0 commentaire
                         </div>
                     </div>
-                    <div class="comments-container w-full hidden">
+                    <div class="comments-container w-full" v-if="!toggleComments">
                         <div class="w-full flex justify-center items-center">
                             <hr class="w-11/12 border-gray-400">
                         </div>
@@ -95,15 +88,15 @@
                         <div v-for="comment in post.Comments" :key="comment.id" :id="comment.id" class="oneComment px-5">
                             <div class="inline-flex justify-start items-center">
                                 <div class="flex flex-wrap justify-start items-center text-left ml-2">
-                                    <a href="/profile" class="postUser w-full text-sm">{{ comment.UserId }}</a>
-                                    <p class="postTime text-xs text-gray-400">{{ comment.createdAt }}</p>
+                                    <a href="/profile" class="postUser w-full text-sm">{{ comment.User.firstName }} {{ comment.User.lastName }}</a>
+                                    <p class="postTime text-xs text-gray-400">{{ comment.updatedAt | formatDate }}</p>
                                 </div>
                             </div>
                             <div class="postContent w-full flex justify-center items-center mb-2">
                                 <p class="text-left px-2">{{ comment.content }}</p>
                             </div>
                         </div>
-                        <button class="createCommentBtn bg-white w-full rounded-md flex justify-between items-center overflow-hidden sticky top-14 lg:relative lg:top-0">
+                        <!-- <button class="createCommentBtn bg-white w-full rounded-md flex justify-between items-center overflow-hidden sticky top-14 lg:relative lg:top-0">
                             <div class="w-28 flex justify-center items-center">
                                 <img src="/assets/images/icon.png" alt="Icone Groupomania" class="w-full p-2">
                             </div>
@@ -113,14 +106,11 @@
                             <div class="w-28 h-full flex justify-center items-center">
                                 <font-awesome-icon icon="paper-plane" class="text-gray-400" style="transform: rotate(50deg); font-size: 2rem;"/>
                             </div>
-                        </button>
+                        </button> -->
                     </div>
                 </div>
             </div>
             <!-- END TEMPLATE POST -->
-            <button class="bg-black text-white w-3/6 mb-4 rounded-md flex justify-center items-center shadow-md" style="height: 50px;">
-                Voir Plus
-            </button>
         </div>
         <div class="column-right hidden lg:block" style="width: 350px;">
             <div class="bg-white w-full rounded-md shadow-md z-10 sticky top-16 flex justify-center items-center flex-wrap overflow-hidden" style="margin-top: 11.3rem;">
@@ -131,20 +121,20 @@
                             <font-awesome-icon icon="camera-retro" class="groupomania-color-blue text-lg" />
                         </button>
                     </div>
-                    <span class="absolute right-6 top-24 font-bold">{{ userProfile.user.name }} {{ userProfile.user.familyName }}</span>
+                    <span class="absolute right-6 top-24 font-bold">{{ $auth.getUser().firstName }} {{ $auth.getUser().lastName }}</span>
                 </div>
                 <div class="flex justify-center items-center flex-wrap mt-16">
                     <button v-on:click="updateProfHidden = !updateProfHidden" id="profileBtn" class="w-full py-2 px-4 groupomania-bg-orange text-white font-bold border-2 groupomania-border-orange rounded-md mx-4 mt-2 shadow-md">Modifier mon Profil</button>
                     <div class="flex justify-center items-center flex-wrap mt-4">
                         <div class="flex justify-center items-center flex-wrap">
                             <span class="w-full text-center">Nb. de Posts</span>
-                            <span class="w-full text-center">15
+                            <span class="w-full text-center">{{ postsCounter }}
                                 <font-awesome-icon icon="meteor" />
                             </span>
                         </div>
                         <div class="flex justify-center items-center flex-wrap">
                             <span class="w-full text-center">Anniversaire</span>
-                            <span class="w-full text-center">{{ userProfile.user.birthday }}
+                            <span class="w-full text-center">{{ $auth.getUser().birthday }} 
                                 <font-awesome-icon icon="birthday-cake" />
                             </span>
                         </div>
@@ -154,7 +144,7 @@
             </div>
             <div class="bg-white w-full rounded-md shadow-md mt-4 sticky flex justify-center items-center flex-wrap overflow-hidden" style="top:25.5rem;">
                 <div class="flex justify-start items-center h-20 groupomania-bg-blue w-full">
-                    <h1 class="pl-4 text-lg text-white font-semibold">Quoi de Neuf {{ userProfile.user.name }} ?</h1>
+                    <h1 class="pl-4 text-lg text-white font-semibold">Quoi de Neuf {{ $auth.getUser().firstName }} ?</h1>
                 </div>
                 <div class="w-full flex justify-center mt-4">
                     <router-link to="/" class="w-full py-2 px-4 bg-white text-center groupomania-color-blue border-2 groupomania-border-blue font-bold rounded-md mx-4 shadow-md">Dernières Publications</router-link>
@@ -177,31 +167,27 @@
                         <div class="flex justify-center w-full flex-wrap">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 flex w-full" id="modal-title">Modifier mon Profil</h3>
                             <form id="updateProfile" action="#" method="post" class="w-10/12 py-4 flex justify-start items-center flex-wrap">
-                                <label for="familyName" class="ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md">
+                                <label for="lastName" class="ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md">
                                     Nom
                                 </label>
-                                <input id="familyName" type="text" name="familyName" autocomplete="familyName" class="w-full px-4 py-3 border-2 rounded-md" placeholder="Nom" :value="userProfile.user.familyName" required>
-                                <label for="name" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md">
+                                <input id="lastName" type="text" name="lastName" autocomplete="lastName" class="w-full px-4 py-3 border-2 rounded-md" placeholder="Nom" :value="$auth.getUser().lastName" required>
+                                <label for="firstName" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md">
                                     Prénom
                                 </label>
-                                <input id="name" type="text" name="name" autocomplete="name" class="w-full px-4 py-3 border-2 rounded-md" placeholder="Prénom" :value="userProfile.user.name" required>
-                                <label for="phone" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md">
-                                    Téléphone
-                                </label>
-                                <input id="phone" type="tel" name="phone" autocomplete="tel" class="w-full px-4 py-3 border-2 rounded-md" placeholder="Téléphone" :value="userProfile.user.phone" required>
-                                <label for="birthday" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md hidden lg:block">
+                                <input id="firstName" type="text" name="firstName" autocomplete="firstName" class="w-full px-4 py-3 border-2 rounded-md" placeholder="Prénom" :value="$auth.getUser().firstName" required>
+                                <label for="birthday" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md block">
                                     Anniversaire
                                 </label>
-                                <input id="birthday" type="text" name="birthday" class="w-full px-4 py-3 border-2 rounded-md hidden lg:block" placeholder="Anniversaire" :value="userProfile.user.birthday" disabled>
-                                <label for="email" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md hidden lg:block">
+                                <input id="birthday" type="text" name="birthday" class="w-full px-4 py-3 border-2 rounded-md block" placeholder="Anniversaire" :value="$auth.getUser().birthday" disabled>
+                                <label for="email" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md block">
                                     Email
                                 </label>
-                                <input id="email" type="email" autocomplete="email" name="email" class="w-full px-4 py-3 border-2 rounded-md hidden lg:block" placeholder="Email" :value="userProfile.user.email" required disabled>
-                                <label for="password" class="mt-4 ml-2 text-center w-5/12 lg:w-1/3 groupomania-bg-blue text-white rounded-t-md">
-                                    Mot de Passe
+                                <input id="email" type="email" autocomplete="email" name="email" class="w-full px-4 py-3 border-2 rounded-md block" placeholder="Email" :value="$auth.getUser().email" required disabled>
+                                <label for="phone" class="mt-4 ml-2 text-center w-1/3 groupomania-bg-blue text-white rounded-t-md block">
+                                    Téléphone
                                 </label>
-                                <input id="password" type="password" autocomplete="new-password" name="password" class="w-full px-4 py-3 border-2 rounded-md" placeholder="Mot de Passe" required>
-                            </form>
+                                <input id="phone" type="tel" autocomplete="phone" name="phone" class="w-full px-4 py-3 border-2 rounded-md block" placeholder="Téléphone" :value="$auth.getUser().phone" required>
+                          </form>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 flex lg:justify-between flex-wrap justify-center sm:px-6 ">
@@ -254,154 +240,107 @@
 </template>
 
 <script>
-import axios from 'axios';
 export default {
     data() {
         return {
-            posts: null,
-            user: {},
+            posts: [],
             updateProfHidden: true,
+            toggleComments: true,
+            postsCounter: 0,
         }
     },
     mounted() {
         // if user is !loggued in, redirect to login page
-        if (!localStorage.getItem('userToken') || !localStorage.getItem('userLoggued')) {
+        if (!this.$auth.isLogged()) {
             this.$router.push('/login')
         }
 
-        console.log(this.$auth)
+        // console.log(this.$auth)
 
-        this.getUser();
         this.getUserPosts()
     },
     methods: {
+
+       // Get user posts
+        getUserPosts() {
+            this.$auth.axios().get('/posts/' + this.$auth.user.id)
+                .then(response => {
+                    this.posts = response.data.posts
+                    console.log(response.data.posts)
+                    this.postsCounter = response.data.posts.length
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+
+        updateProfile() {
+            const form = document.getElementById('updateProfile');
+            const formData = new FormData(form);
+            const data = {};
+
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+                console.log(key, value);
+            }
+
+            // Get user profile with userId and token
+            this.$auth.axios().put('/auth/' + this.$auth.user.id, data)
+                .then(response => {
+                    console.log(response);
+                    this.updateProfHidden = true;
+
+                    // Update authUser in localStorage with new data from response
+                    let authUser = JSON.parse(localStorage.getItem('authUser'));
+
+                    if(response.data.user.firstName) {
+                        authUser.firstName = response.data.user.firstName;
+                    }
+                    if (response.data.user.lastName) {
+                        authUser.lastName = response.data.user.lastName;
+                    }
+                    if(response.data.user.phone) {
+                        authUser.phone = response.data.user.phone;
+                    }
+
+                    localStorage.setItem('authUser', JSON.stringify(authUser));
+
+                    window.location.reload()
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+
+        deleteUserAccount() {
+            this.$auth.axios().delete('/auth/' + this.$auth.user.id)
+                .then(response => {
+                    console.log(response);
+                    this.$auth.logout();
+                    this.$router.push('/login');
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+
         /**
-         * RÉCUPÉRATION DE l'UTILISATEUR
+         * SUPPRESSION D'UN POST
          */
-        getUser() {
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
-            const userId = localStorage.getItem('userId');
-            axios.get('http://localhost:5000/api/auth/' + userId, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + userToken
-                }
-            })
+        deleteThePost(postId) {
+            // Get the post id
+            const postIdToDelete = postId
+
+            this.$auth.axios().delete('posts/' + postIdToDelete )
             .then(response => {
-                this.user = response.data.user
-                console.log(response.data.user)
+                console.log(response)
+                // Refresh the page
+                window.location.reload()
             })
             .catch(error => {
                 console.log(error)
             })
-        },
-        // updateProfile() {
-        //     //  eslint-disable-next-line
-        //     const userToken = localStorage.getItem('userToken');
-        //     const userId = localStorage.getItem('userId');
-
-        //     const form = document.getElementById('updateProfile');
-        //     const formData = new FormData(form);
-        //     const data = {};
-
-        //     for (let [key, value] of formData.entries()) {
-        //         data[key] = value;
-        //         console.log(key, value);
-        //     }
-
-        //     // Get user profile with userId and token
-        //     axios.put('http://localhost:5000/api/auth/' + userId, {
-        //         id: userId,
-        //         familyName: data.familyName,
-        //         name: data.name,
-        //         phone: data.phone,
-        //         password: data.password,
-
-        //         }, {
-        //             headers: {
-        //                 Authorization: 'Bearer ' + userToken
-        //             }
-        //         })
-        //         .then(response => {
-        //             console.log(response);
-        //             this.updateProfHidden = true;
-        //             this.getUserProfile();
-        //         })
-        //         .catch(error => {
-        //             console.log(error);
-        //         })
-        // },
-        // deleteUserAccount() {
-        //     // Get cookie user id and token
-        //     //  eslint-disable-next-line
-        //     const userId = localStorage.getItem('userId');
-        //     //  eslint-disable-next-line
-        //     const userToken = localStorage.getItem('userToken');
-
-        //     // Delete user account with userId and token
-        //     axios.delete('http://localhost:5000/api/auth/' + userId, {
-        //             headers: {
-        //                 Authorization: 'Bearer ' + userToken
-        //             }
-        //         })
-        //         .then(response => {
-        //             console.log(response);
-        //             // Delete cookie userId, token, userLoggued
-        //             localStorage.clear()
-        //             this.$router.push('/login', () => {
-        //                 window.location.reload()
-        //             })
-        //         })
-        //         .catch(error => {
-        //             console.log(error);
-        //         })
-        // },
-
-        // Get user posts
-        getUserPosts() {
-            //  eslint-disable-next-line
-            const userId = localStorage.getItem('userId');
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
-
-            axios.get('http://localhost:5000/api/posts/' + userId, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + userToken
-                    }
-                })
-                .then(response => {
-                    this.posts = response.data.posts
-                    console.log(response.data.posts)
-                })
-                .catch(error => {
-                    console.log(error);
-                })
-        },
-
-        deletePost() {
-            //  eslint-disable-next-line
-            const userToken = localStorage.getItem('userToken');
-
-            const postId = 2
-
-            // Delete user account with userId and token
-            axios.delete('http://localhost:5000/api/posts/' + postId, {
-                    headers: {
-                        Authorization: 'Bearer ' + userToken
-                    }
-                })
-                .then(response => {
-                    console.log(response);
-                    this.getUserPosts();
-                })
-                .catch(error => {
-                    console.log(error);
-                })
-        },
+        }
     },
 }
 </script>

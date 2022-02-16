@@ -9,6 +9,7 @@ async function userSeeder() {
         firstName: 'Clément',
         lastName: 'Lafargue',
         email: 'lafargue@groupomania.com',
+        phone: '0782932111',
         password: hashPassword('!Password'),
         birthday: '2000-05-03',
         isAdmin: true

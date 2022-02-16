@@ -1,12 +1,9 @@
 const { hashPassword, checkPassword, createUserJWT } = require('../helpers');
 const db = require('../models');
-const {Op} = require('sequelize');
-const { now } = require('sequelize/dist/lib/utils');
-let user = require('../models/user');
 
 exports.register = async (req, res) => {
     try {
-        const { email, password, firstName, lastName, birthday } = req.body;
+        const { email, password, firstName, lastName, birthday, phone } = req.body;
         const hashedPassword = await hashPassword(password);
         const user = await db.User.create({
             email,
@@ -14,11 +11,21 @@ exports.register = async (req, res) => {
             firstName,
             lastName,
             birthday,
+            phone
         });
         res.status(201).json({
             message: 'User created',
             token: createUserJWT(user.id),
-            user,
+            // Return id, firstName, LastName, email, birthday, isAdmin
+            user: {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                birthday: user.birthday,
+                phone: user.phone,
+                isAdmin: user.isAdmin,
+            },
         });
     } catch (error) {
         res.status(400).json({
@@ -48,7 +55,17 @@ exports.login = async (req, res) => {
         res.status(200).json({
             message: 'User logged in',
             token: createUserJWT(user.id),
-            user,
+            // Return id, firstName, LastName, email, birthday, isAdmin
+            user: {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                phone: user.phone,
+                // Convert birthday to date DD/MM/YYYY
+                birthday: user.birthday.toLocaleDateString(),
+                isAdmin: user.isAdmin,
+            },
         });
     } catch (error) {
         res.status(500).json({
@@ -75,7 +92,16 @@ exports.getUser = async (req, res) => {
         }
         res.status(200).json({
             message: 'User found',
-            user,
+            // Return id, firstName, LastName, email, birthday, isAdmin
+            user: {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                // Convert birthday to date DD/MM/YYYY
+                birthday: user.birthday.toLocaleDateString(),
+                isAdmin: user.isAdmin,
+            },
         });
     } catch (error) {
         res.status(500).json({
@@ -84,10 +110,10 @@ exports.getUser = async (req, res) => {
     }
 };
 
-// Update user with id if token is valid
+// Update user
 exports.updateUser = async (req, res) => {
     try {
-        const { password, firstName, lastName } = req.body;
+        const { firstName, lastName, phone } = req.body;
         const user = await db.User.findOne({
             where: {
                 id: req.params.id,
@@ -98,20 +124,23 @@ exports.updateUser = async (req, res) => {
                 error: 'User not found',
             });
         }
-        if (password) {
-            const hashedPassword = await hashPassword(password);
-            user.password = hashedPassword;
-        }
-        if (firstName) {
-            user.firstName = firstName;
-        }
-        if (lastName) {
-            user.lastName = lastName;
-        }
-        await user.save();
+        await user.update({
+            firstName,
+            lastName,
+            phone,
+        });
         res.status(200).json({
             message: 'User updated',
-            user,
+            // Return firstName, LastName, phone
+            user: {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                // Convert birthday to date DD/MM/YYYY
+                birthday: user.birthday.toLocaleDateString(),
+                isAdmin: user.isAdmin,
+            },
         });
     } catch (error) {
         res.status(500).json({
@@ -133,6 +162,10 @@ exports.getAllUsers = async (req, res) => {
         }
         res.status(200).json({
             message: 'Users found',
+            // return number of users
+            usersTotal: users.length,
+            // return last user order by date
+            userLast: users[users.length - 1],
             users,
         });
     } catch (error) {

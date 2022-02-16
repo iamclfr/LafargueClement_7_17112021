@@ -25,9 +25,15 @@ const getUserJWT = (token) => {
     }
 };
 
+const validationError = (message) => {
+    return {
+        error: message
+    };
+};
+
 module.exports = {
     hashPassword,
     checkPassword,
     createUserJWT,
-    getUserJWT
+    getUserJWT,
 }

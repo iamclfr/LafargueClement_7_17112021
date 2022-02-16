@@ -1,8 +1,4 @@
 const db = require('../models');
-const fs = require('fs');
-const {Op} = require('sequelize');
-const { now } = require('sequelize/dist/lib/utils');
-let post = require('../models/post');
 
 exports.getAllPosts = async (req, res) => {
     try {
@@ -11,6 +7,7 @@ exports.getAllPosts = async (req, res) => {
                 {
                     model: db.User, 
                     as: "User",
+                    attributes: ['id', 'firstName', 'lastName', 'email']
                 },
                 {
                     model: db.Comment,
@@ -18,7 +15,8 @@ exports.getAllPosts = async (req, res) => {
                     include:
                         {
                             model: db.User, 
-                            as: "User"
+                            as: "User",
+                            attributes: ['id', 'firstName', 'lastName', 'email']
                         }
                 }
             ]
@@ -29,6 +27,8 @@ exports.getAllPosts = async (req, res) => {
             });
         }
         res.status(200).json({
+            // Order by date
+            posts: posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
             posts,
         });
     } catch (error) {
@@ -41,19 +41,33 @@ exports.getAllPosts = async (req, res) => {
 // Get a post by id
 exports.getUserPosts = async (req, res, next) => {
     try {
-        const post = await db.Post.findAll({
+        const posts = await db.Post.findAll({
             where: {
                 userId: req.params.id,
-            }
+            },
+            include: [
+                {
+                    model: db.Comment,
+                    as: "Comments",
+                    include: [
+                        {
+                            model: db.User,
+                            as: "User",
+                            attributes: ['id', 'firstName', 'lastName', 'email']
+                        }
+                    ]
+                }
+            ]
         });
-        if (!post) {
+        if (!posts) {
             return res.status(404).json({
                 error: 'No post found',
             });
         }
         res.status(200).json({
             message: 'Post found',
-            post,
+            posts: posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+            posts,
         });
     } catch (error) {
         res.status(500).json({
@@ -65,10 +79,15 @@ exports.getUserPosts = async (req, res, next) => {
 // Create new post
 exports.createPost = async (req, res, next) => {
     try {
+        if(!req.body.content.length === 0) {
+            return res.status(422).json({
+                error: 'Content is required'
+            });
+        }
         const post = await db.Post.create({
             title: req.body.title,
             content: req.body.content,
-            UserId: req.body.userId,
+            UserId: req.body.UserId,
         });
         if (!post) {
             return res.status(401).json({
@@ -87,46 +106,26 @@ exports.createPost = async (req, res, next) => {
     }
 }
 
-// Update a post
-
 // Delete post
 exports.deletePost = async (req, res, next) => {
-    // Check if postId is valid
-    post.findOne({
-        where: {
-            [Op.or]: [{
-                id: req.params.postId
-            }],
-        },
-    })
-    .then(post => {
-        if (!post) {
-            return res.status(401).json({
-                message: "Post non trouvé !",
-            })
-        }
-        // Delete the post in the database
-        post = db.posts.destroy({
+    try {
+        const post = await db.Post.destroy({
             where: {
-                id: req.params.postId
+                id: req.params.id,
             }
-        })
-        .then(post => {
-            // Return the deleted post in JSON format
-            res.status(200).json({
-                message: "Post supprimé !",
-                post: post,
-            })
-        })
-        .catch(error => {
-            res.status(400).json({
-                error: error + "Erreur lors de la suppression du post !",
-            })
-        })
-    })
-    .catch(error => {
+        });
+        if (!post) {
+            return res.status(404).json({
+                error: 'No post found',
+            });
+        }
+        res.status(200).json({
+            message: 'Post deleted',
+        });
+    }
+    catch (error) {
         res.status(500).json({
-            error: error + "Erreur lors de la suppression du post !",
-        })
-    })
-};
+            error: error.message,
+        });
+    }
+}

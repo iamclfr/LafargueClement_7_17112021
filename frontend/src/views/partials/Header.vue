@@ -2,18 +2,12 @@
     <div class="w-full flex flex-row items-center p-2 justify-between bg-white">
         <div class="ml-8 text-lg text-white flex">
             <router-link to="/" class="text-white">
-                <img src="/assets/images/icon-left-font.png" alt="logo" class="w-48 flex">
+                <img src="/assets/images/icon-left-font.png" alt="logo" class="w-48 hidden lg:flex">
+                <img src="/assets/images/icon.png" alt="logo" class="w-8 flex lg:hidden">
             </router-link>
         </div>
-        <div class="w-50 md:w-1/3 h-10 relative hidden lg:flex">
-            <label for="search" class="absolute left-2 top-2 cursor-pointer">
-                <font-awesome-icon icon="search" />
-            </label>
-            <input id="search" type="search" name="search" placeholder="Rechercher un Utilisateur"
-                class="flex-grow px-10 focus:outline-none border-2 rounded-md" />
-        </div>
         <div class="flex items-center mr-8">
-            <button v-on:click="subHidden = !subHidden" id="userMenuBtn" class="hidden md:flex items-center w-60 cursor-pointer relative">
+            <button v-on:click="subHidden = !subHidden" id="userMenuBtn" class="flex items-center w-52 cursor-pointer relative">
                 <div class="w-full max-w-full flex items-center">
                     <div class="relative">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-8" viewBox="0 0 24 24"
@@ -44,7 +38,6 @@
                 </div>
                 <div v-if="!subHidden" id="subMenu" class="justify-start items-center absolute w-full bg-white shadow-md rounded-b-md p-2 pt-4 top-11 transition-all duration-300">
                     <ul>
-                        <li class="text-gray-500 text-xs uppercase">Mon Espace</li>
                         <li class="mt-2">
                             <router-link to="/profile" class="text-md flex" title="Accédez à votre profil">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 mr-2" fill="none"
@@ -54,19 +47,6 @@
                                 </svg>
                                 Mon Profil
                             </router-link>
-                        </li>
-                        <li class="text-gray-500 text-xs uppercase mt-2">Interface</li>
-                        <li id="nightShift" class="mt-2 flex justify-start">
-                            <svg id="svgNightShift" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                            </svg>
-                            Nigth Shift
-                        </li>
-                        <li class="mt-2 flex justify-start">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                            </svg>
-                            Dark Mode
                         </li>
                         <hr class="mt-2 w-full"/>
                         <li class="mt-2 flex justify-start" @click="logOut">
@@ -78,11 +58,6 @@
                     </ul>
                 </div>
             </button>
-            <button v-on:click="subHidden = !subHidden" class="md:hidden flex items-center cursor-pointer relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-            </button>
         </div>
     </div>
 </template>
@@ -93,8 +68,6 @@
         data() {
             return {
                 subHidden: true,
-                // userMenuBtn: false,
-                // nightShift: false,
             }
         },
         methods: {
